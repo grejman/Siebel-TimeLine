@@ -6,7 +6,8 @@ https://github.com/NUKnightLab/TimelineJS3
 
 # Implementation
 
-* To implement the Physical Renderer the following will need to done.
+To implement the Physical Renderer the following will need to be done:
+
 * Load the Physical Renderer "gmTimelineJSPR.js" to the "..\PUBLIC\scripts\Siebel\custom" folder.
 * Load the Style Sheet "gmTimeLineJS3.css to the "..\PUBLIC\files\custom" folder.
 * Load the timelineJS3 folder and files to the "..\PUBLIC\scripts\Siebel\custom" folder.

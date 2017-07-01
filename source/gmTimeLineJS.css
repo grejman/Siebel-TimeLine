@@ -1,0 +1,38 @@
+/** Applet PR: TilelineJS3 **/
+.tl-text-content-container {
+  vertical-align: top;
+  padding-top:30px;  
+}
+.tl-slide .tl-slide-content-container .tl-slide-content .tl-text {
+  vertical-align: top!important;
+  padding-top:30px;
+}
+.tl-text h2.tl-headline, .tl-text h2.tl-headline-title {
+  color: rgb(230, 0, 0)
+}
+.tl-media .tl-media-blockquote {
+  padding-top:30px;
+  font-size: 15px;
+}
+.tl-timegroup .tl-timegroup-message {
+  color: rgb(230, 0, 0)
+}
+.tl-media .tl-media-blockquote blockquote {
+  font-size: 15px!important;
+}
+.tl-timeline h1, .tl-timeline h2, .tl-timeline h3 {
+  font-size: 18px!important;
+}
+.tl-timemarker.tl-timemarker-active .tl-timemarker-content-container .tl-timemarker-content .tl-timemarker-text h2.tl-headline {
+  color: rgb(230, 0, 0)
+}
+.tl-slidenav-previous .tl-slidenav-content-container .tl-slidenav-icon, .tl-slidenav-next .tl-slidenav-content-container .tl-slidenav-icon {
+  color: #000000;
+}
+.tl-timeline .tl-slidenav-previous {
+  top: 50px!important;
+}
+.tl-timeline .tl-slidenav-next {
+  top: 50px!important;
+  margin-right: 30px;
+}

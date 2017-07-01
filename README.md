@@ -1,6 +1,6 @@
 Siebel-TimeLine
 
-Siebel implementation of the LineLineJS3 Control from NUKnightLab.
+Siebel implementation of the TimeLineJS3 Control from NUKnightLab.
 
 https://github.com/NUKnightLab/TimelineJS3
 

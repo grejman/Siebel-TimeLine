@@ -23,6 +23,6 @@ Implementation
   * Planned  (Date time)
 
 * Add the Physical Renderer to the Applet under Manifest Administration.
-* Add the Style Shhet to the Application under Manifest Administration.
+* Add the Style Sheet to the Application under Manifest Administration.
 
 ![Example](/images/sample.png)

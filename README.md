@@ -1,10 +1,10 @@
-Siebel-TimeLine
+# Siebel-TimeLine
 
 Siebel implementation of the TimeLineJS3 Control from NUKnightLab.
 
 https://github.com/NUKnightLab/TimelineJS3
 
-Implementation
+# Implementation
 
 * To implement the Physical Renderer the following will need to done.
 * Load the Physical Renderer "gmTimeLineJSPM.js" to the "..\PUBLIC\scripts\Siebel\custom" folder.
@@ -24,5 +24,11 @@ Implementation
 
 * Add the Physical Renderer to the Applet under Manifest Administration.
 * Add the Style Sheet to the Application under Manifest Administration.
+
+# Contributions
+
+Contributions are welcome.
+
+# Example
 
 ![Example](/images/sample.png)

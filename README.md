@@ -4,6 +4,11 @@ Siebel Open-UI implementation of the TimeLineJS3 Control from NUKnightLab.
 
 https://github.com/NUKnightLab/TimelineJS3
 
+# Siebel Vertion
+
+  IP2015
+  IP2016
+
 # Implementation
 
 To implement the Physical Renderer the following will need to be done:

@@ -71,7 +71,7 @@ if (typeof(SiebelAppFacade.gmTimelineJSPR) === "undefined") {
       this.SetContainer($("#" + this.GetTimeLineId()));
       this.ClearData();
 
-      this.SetObjTimeLine(new TL.Timeline(this.GetTimeLineId(), this.cjsonTLJSon, {timenav_position:"top",start_at_end:this.Config().Accending}));
+      this.SetObjTimeLine(new TL.Timeline(this.GetTimeLineId(), this.cjsonTLJSon, {timenav_position:lPM.Get("TLNavPosition"),start_at_end:this.Config().Accending}));
     }
 
     gmTimelineJSPR.prototype.BindData = function (bRefresh) {
@@ -106,9 +106,10 @@ if (typeof(SiebelAppFacade.gmTimelineJSPR) === "undefined") {
       // Loop Records and Load
       for (var i = 0; i < lRecSetLen; i++) {
         jsonTLEvent   = {"start_date":{"year":"","month":"","day":"","hour":"","minute":"","second":"","millisecond":""},"end_date":{"year":"","month":"","day":"","hour":"","minute":"","second":"","millisecond":""},"group":"","text":{"headline":"","text":""},"media":{"caption":"","credit":"","url":"","thumbnail":""},"autolink":true,"unique_id":""};
+        //jsonTLEvent   = {"start_date":{"year":"","month":"","day":"","hour":"","minute":"","second":"","millisecond":""},"end_date":{"year":"","month":"","day":"","hour":"","minute":"","second":"","millisecond":""},"group":"","background":{"url":"/images/custom/vodacom/vc_background_01.jpg"},"text":{"headline":"","text":""},"media":{"caption":"","credit":"","url":"","thumbnail":""},"autolink":true,"unique_id":""};
 
         // set Start Date of event
-        lStartDT = new Date(lRecordRawSet[i]["Planned"]);
+        lStartDT = new Date(lRecordRawSet[i][lPM.Get("TLFieldStartDT")]);
         jsonTLEvent.start_date.year         = lStartDT.getFullYear();
         jsonTLEvent.start_date.month        = lStartDT.getMonth();
         jsonTLEvent.start_date.day          = lStartDT.getDay();
@@ -118,66 +119,73 @@ if (typeof(SiebelAppFacade.gmTimelineJSPR) === "undefined") {
         jsonTLEvent.start_date.millisecond  = lStartDT.getMilliseconds();
 
         // set End Date of event
-        if (lRecordRawSet[i]["Planned Completion"] !== "") {
+        if (lRecordRawSet[i][lPM.Get("TLFieldEndDT")] !== "") {
           lEndDT = new Date(lRecordRawSet[i]["Planned Completion"]);
         } else {
-          if (lRecordRawSet[i]["Duration Minutes"] !== "") {
-            lEndDT = new Date(lStartDT.getTime() + (parseInt(lRecordRawSet[i]["Duration Minutes"])*60000));
+          if (lRecordRawSet[i][lPM.Get("TLFieldDuarionMin")] && lRecordRawSet[i][lPM.Get("TLFieldDuarionMin")] !== "") {
+            lEndDT = new Date(lStartDT.getTime() + (parseInt(lRecordRawSet[i][lPM.Get("TLFieldDuarionMin")])*60000));
+          } else {
+            lEndDT = lStartDT;
           }
         }
-        if (lEndDT !== null) {
-          jsonTLEvent.end_date.year        = lEndDT.getFullYear();
-          jsonTLEvent.end_date.month       = lEndDT.getMonth();
-          jsonTLEvent.end_date.day         = lEndDT.getDay();
-          jsonTLEvent.end_date.hour        = lEndDT.getHours();
-          jsonTLEvent.end_date.minute      = lEndDT.getMinutes();
-          jsonTLEvent.end_date.second      = lEndDT.getSeconds();
-          jsonTLEvent.end_date.millisecond = lEndDT.getMilliseconds();
-          //display_date
-        }
+        jsonTLEvent.end_date.year        = lEndDT.getFullYear();
+        jsonTLEvent.end_date.month       = lEndDT.getMonth();
+        jsonTLEvent.end_date.day         = lEndDT.getDay();
+        jsonTLEvent.end_date.hour        = lEndDT.getHours();
+        jsonTLEvent.end_date.minute      = lEndDT.getMinutes();
+        jsonTLEvent.end_date.second      = lEndDT.getSeconds();
+        jsonTLEvent.end_date.millisecond = lEndDT.getMilliseconds();
 
         // set text of event
-        jsonTLEvent.text.headline    = lRecordRawSet[i]["Description"];
-        jsonTLEvent.media.credit     = lRecordRawSet[i]["Type"];
-        jsonTLEvent.text.text        = "<b>Type: </b>" + lRecordRawSet[i]["Type"] + "<br>" +
-                                       "<b>Owner: </b>" + lRecordRawSet[i]["Owner Full Name"] + "<br>";
+        jsonTLEvent.text.headline    = lRecordRawSet[i][lPM.Get("TLFieldDescription")];
+        jsonTLEvent.media.credit     = lRecordRawSet[i][lPM.Get("TLFieldType")];
+        jsonTLEvent.text.text        = "<b>Type: </b>"     + lRecordRawSet[i][lPM.Get("TLFieldType")]      + "<br>" +
+                                       "<b>Refrence: </b>" + lRecordRawSet[i][lPM.Get("TLFieldReference")] + "<br>";
+                                       "<b>Status: </b>"   + lRecordRawSet[i][lPM.Get("TLFieldStatus")]    + "<br>";
+                                      
+        // Action: set media of event
+        if (lPM.Get("TLType")==="Action") {
 
-        // set media of event
-        switch (lRecordRawSet[i]["Type"]) {
-          case "Email - Inbound":
-            jsonTLEvent.group            = "Inbound";
-            jsonTLEvent.media.thumbnail  = "IMAGES/\icon_gemail_enabled.gif";
-            jsonTLEvent.media.url        = "<blockquote style=\"white-space: pre-line;\" class='vc_tl_emailbody'>" + lRecordRawSet[i]["Comment"].replace(/(\s\n\r)/g, " ")  + "</blockquote>";
-            jsonTLEvent.media.caption    = "Email Receaved.";
-            jsonTLEvent.text.text       += "<b>Email Type:</b> Inbound<br>" +
-                                           "<b>Email Sender:</b> "    + lRecordRawSet[i]["Email Sender Address"] + "<br>" +
-                                           "<b>Email Recipient:</b> " + lRecordRawSet[i]["Email Recipient Address"];
-          break;
-          case "Email - Outbound":
-          case "Communication With Customer":
-            jsonTLEvent.group            = "Outbound";
-            jsonTLEvent.media.thumbnail  = "IMAGES/\icon_email_enabled.gif";
-            jsonTLEvent.media.caption    = "Email Sent.";
-            jsonTLEvent.text.text       += "<b>Email Type:</b> Outbound<br>" +
-                                           "<b>Email Sent From:</b> " + lRecordRawSet[i]["Email To Line"];
+          jsonTLEvent.text.text     +=     "<b>Owner: </b>"    + lRecordRawSet[i][lPM.Get("TLFieldActionOwner")]  + "<br>";
 
-            if (lRecordRawSet[i]["Email Body"]!="") {
-              var lTmpId = "#" + this.GetTimeLineId() + " iframe";
-              jsonTLEvent.media.url      = "<iframe frameborder='0' //onload=\"vc_tl_iFrameLoad(this,$('" + lTmpId + "'));\" class=\"vc_tl_emailbody\" src=\"data:text/html;charset=utf-8," + encodeURIComponent(lRecordRawSet[i]["Email Body"]) + "\"></iframe>";
-            } else {
-              jsonTLEvent.media.url      = "<blockquote style=\"white-space: pre-line;\" class=\"vc_tl_emailbody\">" + lRecordRawSet[i]["Comment"].replace(/(\s\n\r)/g, " ") + "</blockquote>";
-            }
-          break;
-          //case "SMS - Outbound":    sonTLEvent.media.thumbnail = "";    break;
-          //case "System":            sonTLEvent.media.thumbnail = "IMAGES\ ";    break;
-          //case "System":            sonTLEvent.media.thumbnail = "IMAGES\icon_calendar_31.gif";    break;
-          //case "Call - Outbound":   sonTLEvent.media.thumbnail = "IMAGES\contactCall.png";   break;
-          default:
-            jsonTLEvent.group            = "System";
-            jsonTLEvent.text.text       += lRecordRawSet[i]["Comment"];
+          switch (lRecordRawSet[i][lPM.Get("TLFieldType")]) {
+            case "Email - Inbound":
+              jsonTLEvent.group            = "Inbound";
+              jsonTLEvent.media.thumbnail  = "IMAGES/\icon_gemail_enabled.gif";
+              jsonTLEvent.media.url        = "<blockquote style=\"white-space: pre-line;\" class='vc_tl_emailbody'>" + lRecordRawSet[i][lPM.Get("TLFieldComment")].replace(/(\s\n\r)/g, " ")  + "</blockquote>";
+              jsonTLEvent.media.caption    = "Email Receaved.";
+              jsonTLEvent.text.text       += "<b>Email Type:</b> Inbound<br>" +
+                                             "<b>Email Sender:</b> "    + lRecordRawSet[i][lPM.Get("TLFieldActionEmailFrom")] + "<br>" +
+                                             "<b>Email Recipient:</b> " + lRecordRawSet[i][lPM.Get("TLFieldActionEmailRecip")];
+            break;
+            case "Email - Outbound":
+            case "Communication With Customer":
+              jsonTLEvent.group            = "Outbound";
+              jsonTLEvent.media.thumbnail  = "IMAGES/\icon_email_enabled.gif";
+              jsonTLEvent.media.caption    = "Email Sent.";
+              jsonTLEvent.text.text       += "<b>Email Type:</b> Outbound<br>" +
+                                             "<b>Email Sent From:</b> " + lRecordRawSet[i][lPM.Get("TLFieldActionEmailTo")];
+
+              if (lRecordRawSet[i][lPM.Get("TLFieldActionEmailBody")] != "") {
+                var lTmpId = "#" + this.GetTimeLineId() + " iframe";
+                jsonTLEvent.media.url      = "<iframe frameborder='0' //onload=\"vc_tl_iFrameLoad(this,$('" + lTmpId + "'));\" class=\"vc_tl_emailbody\" src=\"data:text/html;charset=utf-8," + encodeURIComponent(lRecordRawSet[i][lPM.Get("TLFieldActionEmailBody")]) + "\"></iframe>";
+              } else {
+                jsonTLEvent.media.url      = "<blockquote style=\"white-space: pre-line;\" class=\"vc_tl_emailbody\">" + lRecordRawSet[i][lPM.Get("TLFieldComment")].replace(/(\s\n\r)/g, " ") + "</blockquote>";
+              }
+            break;
+            default:
+              jsonTLEvent.group            = "System";
+              jsonTLEvent.text.text       += lRecordRawSet[i][lPM.Get("TLFieldComment")];
+              jsonTLEvent.media.caption    = lRecordRawSet[i][lPM.Get("TLFieldStatus")];
+          }
         }
-        jsonTLEvent.unique_id            = lRecordRawSet[i]["Id"] + ";" + i;
+        // Alert: set media of event
+        if (lPM.Get("TLType")==="Alert") {
+          jsonTLEvent.group            = lRecordRawSet[i][lPM.Get("TLFieldType")];
+          jsonTLEvent.text.text       += lRecordRawSet[i][lPM.Get("TLFieldComment")];
+        }
 
+        jsonTLEvent.unique_id  = lRecordRawSet[i]["Id"] + ";" + i;
         // add event
         jsonTLJSon.events.push(jsonTLEvent);
       }
@@ -367,7 +375,7 @@ if (typeof(SiebelAppFacade.gmTimelineJSPR) === "undefined") {
 };
 
 function vc_tl_iFrameLoad(lObj) {
-  $(lObj).height($(this).outerHeight()).css("max-height","none");
+  $(lObj).height($(this).outerHeight()*2).css("max-height","none");
   $(lObj).parent().css("max-height","none");
   $(lObj).parent().css("height","100%");
 }
